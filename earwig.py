@@ -1,5 +1,5 @@
 #EARWIG TEMPLATE SYSTEM BY William Lim
-#ver 1.0.0
+#ver 1.1.1
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import ssl
 from urllib.parse import unquote as URLDECODEPERCENT
@@ -45,7 +45,7 @@ class handler(BaseHTTPRequestHandler):
         if '?' in self.path and not self.path.endswith(".js") and not self.path.endswith(".css") and not self.path.endswith(".json"):
             self.send_header('Content-type','text/html')
             self.end_headers()
-            rawURLVars = self.path.split('?')[1].split('&')
+            rawURLVars = self.path.split('?', 1)[1].split('&')
             for i in range(0, len(rawURLVars)):
                 data = rawURLVars[i].split('=')
                 urlVars[data[0]] = URLDECODEPERCENT(data[1])
