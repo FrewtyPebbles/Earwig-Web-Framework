@@ -70,7 +70,6 @@ class handler(BaseHTTPRequestHandler):
                 self.send_header('Content-type','text/json')
             self.end_headers()
             render = f"{open(pathString[1:], 'r').read()}"
-        print(render)
         self.wfile.write(bytes(render, "utf8"))
     def do_POST(self):
         global earwigPages
@@ -86,7 +85,6 @@ class handler(BaseHTTPRequestHandler):
             pdict['boundary'] = bytes(pdict['boundary'], 'utf-8')
             formVars = cgi.parse_multipart(self.rfile, pdict)
             headerVars.update(formVars)
-        print (headerVars)
         render=""
         if '?' in self.path and not self.path.endswith(".js") and not self.path.endswith(".css") and not self.path.endswith(".json"):
             self.send_header('Content-type','text/html')
@@ -112,6 +110,13 @@ class handler(BaseHTTPRequestHandler):
             self.end_headers()
             render = f"{open(pathString[1:], 'r').read()}"
         self.wfile.write(bytes(render, "utf8"))
+setting = {}
+with open('Settings.txt') as settingsFile:
+    settingsLines = settingsFile.read().splitlines()
+    for line in settingsLines:
+        settingPair = line.split('=')
+        setting[settingPair[0]] = settingPair[1]
+print(f"EARWIG - - [PORT { 8000 if setting['port'] == 'default' else int(setting['port'])}] Starting server")
 
-with HTTPServer(('', 8000), handler) as server:
+with HTTPServer(('' if setting['ip'] == 'default' else setting['ip'], 8000 if setting['port'] == 'default' else int(setting['port'])), handler) as server:
     server.serve_forever()
