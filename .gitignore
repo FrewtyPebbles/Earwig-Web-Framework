@@ -1,6 +1,6 @@
 #sourcefiles
-.html
-.ewtl
-.css
-.json
-.js
+*.html
+*.ewtl
+*.css
+*.json
+*.js
