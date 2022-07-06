@@ -5,11 +5,10 @@
 1. Go into your __settings.txt__ file and change the default port to your desired port.
 2. Make a new file with a __.ear__ extension.
 3. Now add that file as a route by adding a line to your __settings.txt__ following the format: _UrlRoute=filepathWithoutExtension_
-4. Now run your server by entering:
+4. Now run your server by entering the following into a terminal:
 ```
 py earwig.py
 ```
- into a terminal.
 If all was done correctly, you should be able to find your server hosted at [http://localhost:8000/](http://localhost:8000/) (Assuming you used port 8000)
 
 > Keep in mind the only pages that will load are ones specified as routes in __settings.txt__.  So if you specify the route _UrlRoute=filepathWithoutExtension_ and visit _http://localhost:8000/UrlRoute_ the server will load the page data from _filepathWithoutExtension.ear_.
