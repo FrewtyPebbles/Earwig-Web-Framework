@@ -53,4 +53,4 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 ?>
 ```
 Essentially any .html or strings that you print by wraping it in a python print() function inside earwig tags _<? ?>_ will be sent to the browser.
-GET AND POST: If you wish to reference data from get variables or post headers/body, you can do so by typing the **R_get["urlVariableName"]** and **R_post["urlVariableName"]** like so.
+> GET AND POST: If you wish to reference data from get variables or post headers/body, you can do so by typing the **R_get["urlVariableName"]** and **R_post["urlVariableName"]** like so.
