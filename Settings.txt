@@ -1,2 +1,7 @@
-port=4000
+/!/ Server Settings:
+port=8000
 ip=default
+/!/ Forbidden File Extensions
+!ear
+/!/ Startup Routes:
+~=root

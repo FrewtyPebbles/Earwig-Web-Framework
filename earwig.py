@@ -1,7 +1,6 @@
 #EARWIG TEMPLATE SYSTEM BY William Lim
-#ver 1.1.1
+#ver 1.2.1
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import ssl
 from urllib.parse import unquote as URLDECODEPERCENT
 import re
 from io import StringIO
@@ -14,6 +13,27 @@ VERSION_NUMBER = "1.0.0"
 earwigVars = {}
 earwigPages = {}
 
+#parse settings file
+setting = {}
+routingPath = {}
+forbiddenExtensions = []
+with open('settings.txt') as settingsFile:
+    settingsLines = settingsFile.read().splitlines()
+    for line in settingsLines:
+        if line[0] == '!':
+            forbiddenExtensions.append(line[1:])
+        elif not line.startswith("/!/"):
+            settingPair = line.split('=')
+            if line.startswith('ip') or line.startswith('port'):
+                setting[settingPair[0]] = settingPair[1]
+            elif line.startswith('~'):
+                routingPath[''] = settingPair[1]
+            else:
+                routingPath[settingPair[0]] = settingPair[1]
+def check_forbidden(fileEx):
+    if fileEx in forbiddenExtensions:
+        return False
+    return True
 def renderPagePython(filename, fileContent, R_get, R_post, recompile):
 	global compiledCode
 	compiledHTML=""
@@ -41,24 +61,34 @@ class handler(BaseHTTPRequestHandler):
         global earwigPages
         self.send_response(200)
         urlVars = {}
+        if '/?' in str(self.path):
+            urlSlug = self.path.split('/',1)[1].split('?', 1)[0]
+            if urlSlug[len(urlSlug)-1] == '/':
+                urlSlug = urlSlug[:-1]
+        elif self.path[len(self.path)-1] == '/':
+            urlSlug = self.path.split('/',1)[1][:-1]
+        else:
+            urlSlug = self.path.split('/',1)[1]
         render=""
-        if '?' in self.path and not self.path.endswith(".js") and not self.path.endswith(".css") and not self.path.endswith(".json"):
+        if '.' not in self.path:
             self.send_header('Content-type','text/html')
             self.end_headers()
-            rawURLVars = self.path.split('?', 1)[1].split('&')
+            rawURLVars = []
+            if '?' in self.path:
+                rawURLVars = self.path.split('?', 1)[1].split('&')
             for i in range(0, len(rawURLVars)):
                 data = rawURLVars[i].split('=')
                 urlVars[data[0]] = URLDECODEPERCENT(data[1])
-            if urlVars['page']+'.ewtl' not in earwigPages:
-                earwigPages[urlVars['page']+'.ewtl'] = open(urlVars['page']+'.ewtl', 'r').read()
-                render = f"{renderPagePython(urlVars['page']+'.ewtl', earwigPages[urlVars['page']+'.ewtl'], R_get=urlVars, R_post={}, recompile=True)}"
-            elif earwigPages[urlVars['page']+'.ewtl'] != open(urlVars['page']+'.ewtl', 'r').read():
-                earwigPages[urlVars['page']+'.ewtl'] = open(urlVars['page']+'.ewtl', 'r').read()
-                render = f"{renderPagePython(urlVars['page']+'.ewtl', earwigPages[urlVars['page']+'.ewtl'], R_get=urlVars, R_post={}, recompile=True)}"
+            if routingPath[urlSlug] +'.ear' not in earwigPages:
+                earwigPages[routingPath[urlSlug]+'.ear'] = open(routingPath[urlSlug]+'.ear', 'r').read()
+                render = f"{renderPagePython(routingPath[urlSlug]+'.ear', earwigPages[routingPath[urlSlug]+'.ear'], R_get=urlVars, R_post={}, recompile=True)}"
+            elif earwigPages[routingPath[urlSlug]+'.ear'] != open(routingPath[urlSlug]+'.ear', 'r').read():
+                earwigPages[routingPath[urlSlug]+'.ear'] = open(routingPath[urlSlug]+'.ear', 'r').read()
+                render = f"{renderPagePython(routingPath[urlSlug]+'.ear', earwigPages[routingPath[urlSlug]+'.ear'], R_get=urlVars, R_post={}, recompile=True)}"
             else:
-                earwigPages[urlVars['page']+'.ewtl'] = open(urlVars['page']+'.ewtl', 'r').read()
-                render = f"{renderPagePython(urlVars['page']+'.ewtl', earwigPages[urlVars['page']+'.ewtl'], R_get=urlVars, R_post={}, recompile=False)}"
-        elif self.path.endswith(".js") or self.path.endswith(".css") or self.path.endswith(".json"):
+                earwigPages[routingPath[urlSlug]+'.ear'] = open(routingPath[urlSlug]+'.ear', 'r').read()
+                render = f"{renderPagePython(routingPath[urlSlug]+'.ear', earwigPages[routingPath[urlSlug]+'.ear'], R_get=urlVars, R_post={}, recompile=False)}"
+        elif check_forbidden(self.path.rsplit('.', 1)[1]):
             pathString = ""
             for pathpart in self.path.split('/')[1:]:
                 pathString += f"/{pathpart}"
@@ -75,34 +105,43 @@ class handler(BaseHTTPRequestHandler):
         global earwigPages
         self.send_response(200)
         urlVars = {}
+        if '/?' in str(self.path):
+            urlSlug = self.path.split('/',1)[1].split('?', 1)[0]
+            if urlSlug.endswith('/'):
+                urlSlug = urlSlug[:-1]
+        else:
+            urlSlug = self.path.split('/',1)[1]
         headerVars = {}
+        formVars = {}
         headerValues = self.headers.items()
         for i in range(0, len(headerValues)):
             headerVars[headerValues[i][0]] = headerValues[i][1]
-        ctype, pdict = cgi.parse_header(self.headers['Content-Type'])
-        formVars = {}
-        if ctype == 'multipart/form-data':
-            pdict['boundary'] = bytes(pdict['boundary'], 'utf-8')
-            formVars = cgi.parse_multipart(self.rfile, pdict)
-            headerVars.update(formVars)
+        if self.headers['Content-Type'] != None:
+            ctype, pdict = cgi.parse_header(self.headers['Content-Type'])
+            if ctype == 'multipart/form-data':
+                pdict['boundary'] = bytes(pdict['boundary'], 'utf-8')
+                formVars = cgi.parse_multipart(self.rfile, pdict)
+                headerVars.update(formVars)
         render=""
-        if '?' in self.path and not self.path.endswith(".js") and not self.path.endswith(".css") and not self.path.endswith(".json"):
+        if '.' not in self.path:
             self.send_header('Content-type','text/html')
             self.end_headers()
-            rawURLVars = self.path.split('?')[1].split('&')
+            rawURLVars = []
+            if '?' in self.path:
+                rawURLVars = self.path.split('?', 1)[1].split('&')
             for i in range(0, len(rawURLVars)):
                 data = rawURLVars[i].split('=')
                 urlVars[data[0]] = URLDECODEPERCENT(data[1])
-            if urlVars['page']+'.ewtl' not in earwigPages:
-                earwigPages[urlVars['page']+'.ewtl'] = open(urlVars['page']+'.ewtl', 'r').read()
-                render = f"{renderPagePython(urlVars['page']+'.ewtl', earwigPages[urlVars['page']+'.ewtl'], R_get=urlVars, R_post=headerVars, recompile=True)}"
-            elif earwigPages[urlVars['page']+'.ewtl'] != open(urlVars['page']+'.ewtl', 'r').read():
-                earwigPages[urlVars['page']+'.ewtl'] = open(urlVars['page']+'.ewtl', 'r').read()
-                render = f"{renderPagePython(urlVars['page']+'.ewtl', earwigPages[urlVars['page']+'.ewtl'], R_get=urlVars, R_post=headerVars, recompile=True)}"
+            if routingPath[urlSlug]+'.ear' not in earwigPages:
+                earwigPages[routingPath[urlSlug]+'.ear'] = open(routingPath[urlSlug]+'.ear', 'r').read()
+                render = f"{renderPagePython(routingPath[urlSlug]+'.ear', earwigPages[routingPath[urlSlug]+'.ear'], R_get=urlVars, R_post=headerVars, recompile=True)}"
+            elif earwigPages[routingPath[urlSlug]+'.ear'] != open(routingPath[urlSlug]+'.ear', 'r').read():
+                earwigPages[routingPath[urlSlug]+'.ear'] = open(routingPath[urlSlug]+'.ear', 'r').read()
+                render = f"{renderPagePython(routingPath[urlSlug]+'.ear', earwigPages[routingPath[urlSlug]+'.ear'], R_get=urlVars, R_post=headerVars, recompile=True)}"
             else:
-                earwigPages[urlVars['page']+'.ewtl'] = open(urlVars['page']+'.ewtl', 'r').read()
-                render = f"{renderPagePython(urlVars['page']+'.ewtl', earwigPages[urlVars['page']+'.ewtl'], R_get=urlVars, R_post=headerVars, recompile=False)}"
-        elif self.path.endswith(".js") or self.path.endswith(".css") or self.path.endswith(".json"):
+                earwigPages[routingPath[urlSlug]+'.ear'] = open(routingPath[urlSlug]+'.ear', 'r').read()
+                render = f"{renderPagePython(routingPath[urlSlug]+'.ear', earwigPages[routingPath[urlSlug]+'.ear'], R_get=urlVars, R_post=headerVars, recompile=False)}"
+        elif check_forbidden(self.path.rsplit('.', 1)[1]):
             pathString = ""
             for pathpart in self.path.split('/')[1:]:
                 pathString += f"/{pathpart}"
@@ -110,12 +149,7 @@ class handler(BaseHTTPRequestHandler):
             self.end_headers()
             render = f"{open(pathString[1:], 'r').read()}"
         self.wfile.write(bytes(render, "utf8"))
-setting = {}
-with open('Settings.txt') as settingsFile:
-    settingsLines = settingsFile.read().splitlines()
-    for line in settingsLines:
-        settingPair = line.split('=')
-        setting[settingPair[0]] = settingPair[1]
+
 print(f"EARWIG - - [PORT { 8000 if setting['port'] == 'default' else int(setting['port'])}] Starting server")
 
 with HTTPServer(('' if setting['ip'] == 'default' else setting['ip'], 8000 if setting['port'] == 'default' else int(setting['port'])), handler) as server:
