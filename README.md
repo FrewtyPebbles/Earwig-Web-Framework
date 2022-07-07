@@ -28,6 +28,7 @@ login=pages/login
  - _ _/!/ is a comment_ _
  ##How To Write A .ear File
  Earwig is designed to function similar to PHP.  
+ 
  Example:
  ```
  <?
