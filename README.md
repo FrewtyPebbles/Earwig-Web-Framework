@@ -1,5 +1,5 @@
 # Earwig (DEV 0.2.1)
- An http server that enables you to use python as a server side scripting language.
+ Earwig is an http server that enables you to use python as a server side scripting language.
 ##How To Get Started
  Earwig is easy to setup and get working with only a few steps:
 1. Go into your __settings.txt__ file and change the default port to your desired port.
