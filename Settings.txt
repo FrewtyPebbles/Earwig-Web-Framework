@@ -3,5 +3,6 @@ port=8000
 ip=default
 /!/ Forbidden File Extensions
 !ear
+!py
 /!/ Startup Routes:
 ~=root
