@@ -27,7 +27,7 @@ login=pages/login
  - _ _! is for marking a file extension as non accessable by the browser's URL_ _
  - _ _/!/ is a comment_ _
  ##How To Write A .ear File
- Earwig is designed to function similar to PHP.
+ Earwig is designed to function similar to PHP.  
  Example:
  ```
  <?
