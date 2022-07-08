@@ -37,7 +37,7 @@ login=pages/login
  Earwig is designed to function similar to PHP.  
  
  Example:
- ```
+ ```php
  <?
 import Includes.projectData as siteGlobals
 print(
