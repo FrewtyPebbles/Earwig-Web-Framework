@@ -7,9 +7,13 @@
 1. Go into your __settings.txt__ file and change the default port to your desired port.
 2. Make a new file with a __.ear__ extension.
 3. Now add that file as a route by adding a line to your __settings.txt__ following the format: _UrlRoute=filepathWithoutExtension_
-4. Now run your server by entering the following into a terminal:
+4. Now run your server by entering either of the following into a terminal:
 ```
 py earwig.py
+```
+
+```
+py earwigFlask.py
 ```
 If all was done correctly, you should be able to find your server hosted at [http://localhost:8000/](http://localhost:8000/) (Assuming you used port 8000)
 
