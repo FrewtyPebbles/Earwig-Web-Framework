@@ -1,5 +1,5 @@
 # Earwig (1.4.1)
->_NOTE:_ earwig.py USES http.server AND IS RISKY TO USE IN PRODUCTION.  FOR PRODUCTION USE earwigFlask.py.
+>_IMPORTANT:_ __earwig.py__ USES http.server AND IS RISKY TO USE IN PRODUCTION.  FOR PRODUCTION USE __earwigFlask.py__.
 
  Earwig is an http server that enables you to use python as a server side scripting language.
  ## How To Get Started
