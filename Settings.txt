@@ -1,8 +1,9 @@
 /!/ Server Settings:
 port=8000
 ip=default
+devmode=False
 /!/ Forbidden File Extensions
 !ear
 !py
 /!/ Startup Routes:
-~=root
+~=index

@@ -9,7 +9,7 @@ import cgi
 HTTP_IMPORTS = ['http.server','urllib.parse','re','io','contextlib','textwrap','cgi', __name__]
 
 compiledCode = {}
-VERSION_NUMBER = "1.3.1"
+VERSION_NUMBER = "1.4.1"
 Universal = {}
 earwigPages = {}
 
