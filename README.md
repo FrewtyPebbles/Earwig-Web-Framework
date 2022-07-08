@@ -2,7 +2,7 @@
 >_NOTE:_ earwig.py USES http.server AND IS RISKY TO USE IN PRODUCTION.  FOR PRODUCTION USE earwigFlask.py.
 
  Earwig is an http server that enables you to use python as a server side scripting language.
-##How To Get Started
+ ## How To Get Started
  Earwig is easy to setup and get working with only a few steps:
 1. Go into your __settings.txt__ file and change the default port to your desired port.
 2. Make a new file with a __.ear__ extension.
