@@ -7,7 +7,7 @@ from urllib.parse import unquote_plus as URLDECODEPERCENT
 
 compiledCode = {}
 moduleCache = {}
-VERSION_NUMBER = "1.5.1"
+VERSION_NUMBER = "0.5.1"
 Universal = {}
 AuthTokens = {}
 earwigPages = {}
