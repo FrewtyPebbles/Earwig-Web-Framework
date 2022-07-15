@@ -1,4 +1,4 @@
-# Earwig (1.4.1)
+# Earwig (0.5.1)
 >_IMPORTANT:_ __earwig.py__ USES http.server AND IS RISKY TO USE IN PRODUCTION.  FOR PRODUCTION USE __earwigFlask.py__.
 
  Earwig is an http server that enables you to use python as a server side scripting language.
@@ -68,3 +68,5 @@ officia deserunt mollit anim id est laborum.
 ```
 Essentially any .html or strings that you print by wraping it in a python print() function inside earwig tags _<? ?>_ will be sent to the browser.
 > GET AND POST: If you wish to reference data from get variables or post headers/body, you can do so by typing the **R_get["urlVariableName"]** and **R_post["headerorbodyparameter"]** like so.
+# CHANGELOG
+ - v0.5.1 - added _mime_type()_ function to change the mimetype of the current request.  Introduced POST requests and POST request variables in _R_post_ global dict.  NON FLASK EARWIG DISCONTINUED FOR SECURITY REASONS.
