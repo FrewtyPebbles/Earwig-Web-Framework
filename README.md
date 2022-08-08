@@ -1,8 +1,10 @@
 # Earwig 0.9.1
 **NOTE: This software is in a beta version, we cannot at this time ensure its stability.**
 
- Earwig is an http server that enables you to use python as a server side scripting language.
- ## How To Get Started
+ Earwig is an http server that enables you serve _.py_ and _.ear_ source files alot like how _.php_ source files are served.
+
+## How To Get Started (Basic)
+
  Earwig is easy to setup and get working with only a few steps:
 1. Go into your __settings.txt__ file and change the default port to your desired port.
 2. Make a new file with a __.py__ extension.
@@ -12,3 +14,83 @@
 py earwig.py
 ```
 If all was done correctly, you should be able to find your server hosted at [http://localhost:8000/](http://localhost:8000/) (Assuming you used port 8000)
+
+## How Earwig Works (Abridged)
+
+Earwig redirects the python stdout to the http response for incoming http requests.  In other words, anything that is __print()__ed in your earwig page files will be rendered/be the response for the requested url.
+
+## Framework Globals and Accessables
+
+These globals can be accessed in any _.py_ or _.ear_ page file.
+
+---
+
+`R_get["requestAttribute"]`
+
+R_get is a dictionary containing all parameters/attributes of the incoming GET request.
+
+---
+
+`R_post["requestAttribute"]`
+
+R_post is a dictionary containing all parameters/attributes of the incoming POST request.
+
+---
+
+`_BASE_URL`
+
+Provides the Root of the http URL.  Example _http://yourdns.com/_
+
+---
+
+`_FULL_URL`
+
+Provides the full http URL with route.  Example _http://yourdns.com/about_
+
+---
+
+`_MIME_TYPE`
+
+The current mime type for the requested page.
+
+## Framework Functions
+
+These functions can be executed in any _.py_ or _.ear_ page file.
+
+---
+
+`mime_type(mime:str):`
+
+Change the response mime type.  Returns the mime type.
+
+---
+
+`set_headers(headerDict:dict = {})`
+
+Set/add the headers for the response.  Returns the dictionary of all the headers.
+
+---
+
+`set_setting(_setting:str, _newvalue)`
+
+Change/set a setting. returns the setting's new value.
+
+---
+
+`delete_setting(_setting:str) -> bool`
+
+Deletes a setting. Returns true on success, False on failure.
+
+---
+
+`append_setting(_setting:str, _appendvalue)`
+
+Appends the *_appendvalue* to the value of the setting provided.  On failure returns false. On success returns the setting's new value.
+
+---
+
+`pop_setting(_setting, num:int = False)`
+
+Performs a _.pop()_ on the value of the setting provided.
+
+---
