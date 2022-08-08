@@ -21,7 +21,7 @@ Earwig redirects the python stdout to the http response for incoming http reques
 
 ## Framework Globals and Accessables
 
-These globals can be accessed in any _.py_ or _.ear_ page file.
+These globals can be accessed in any _.py_ or _.ear_ page file as declared in the routes of your _settings.EWS_ file.
 
 ---
 
@@ -55,7 +55,7 @@ The current mime type for the requested page.
 
 ## Framework Functions
 
-These functions can be executed in any _.py_ or _.ear_ page file.
+These functions can be executed in any _.py_ or _.ear_ page file as declared in the routes of your _settings.EWS_ file.
 
 ---
 
