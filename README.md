@@ -17,26 +17,27 @@ Earwig redirects the python stdout to the http response for incoming http reques
 ## Framework Constants and Globals
 
 ## Framework Functions
-#### __def mime_type(mime:str):__
 
-Change the response mime type.  Returns the mime type.
+__def mime_type(mime:str):__
 
-#### __def set_headers(headerDict:dict = {}):__
+ - Change the response mime type.  Returns the mime type.
 
-Set/add the headers for the response.  Returns the dictionary of all the headers.
+__def set_headers(headerDict:dict = {}):__
 
-#### __def set_setting(_setting:str, _newvalue):__
+ - Set/add the headers for the response.  Returns the dictionary of all the headers.
 
-Change/set a setting. returns the setting's new value.
+__def set_setting(_setting:str, _newvalue):__
 
-#### __def delete_setting(_setting:str) -> bool:__
+ - Change/set a setting. returns the setting's new value.
 
-Deletes a setting. Returns true on success, False on failure.
+__def delete_setting(_setting:str) -> bool:__
 
-#### __def append_setting(_setting:str, _appendvalue):__
+ - Deletes a setting. Returns true on success, False on failure.
 
-Appends to the value of the setting provided.  On failure returns false. On success returns the setting's new value.
+__def append_setting(_setting:str, _appendvalue):__
 
-#### __def pop_setting(_setting, num:int = False):__
+ - Appends to the value of the setting provided.  On failure returns false. On success returns the setting's new value.
 
-Performs a _pop()_ on the value of the setting provided.
+__def pop_setting(_setting, num:int = False):__
+
+ - Performs a _pop()_ on the value of the setting provided.
