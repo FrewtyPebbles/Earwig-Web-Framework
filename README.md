@@ -256,3 +256,19 @@ The Earwig HTML Renderer allows you to easier tokenize certain elements and appl
 ## Auth Tokens
 
 ### SYMETRIC AUTH TOKENS
+
+Earwig provides an easy system to set up login tokens and credentials with just a class and a few functions.  With this system you can decide which login parameters are sensitive/hashed.  Auth tokens are both hashed then excrypted.
+
+---
+
+`SymmetricAuthTokens(identifier:str, dbName:str="Accounts", accountTableName:str="Accounts", authTableName:str="symetricAuthTokens")`
+
+The _SymmetricAuthTokens_ class is used as the main handler for your auth system. Each of its constructor's parameters provide a level of control over your auth system:
+
+ - __identifier__ : This is the column name/account parameter in the database that will act as the association between each account and tokens made by those accounts.  The best practice is to make this an account parameter that is not sensitive.
+ 
+ - __dbName__ : This is the name of the _.db_ file that your auth system will connect to.
+ 
+ - __accountTableName__ : This is the name of the table in your auth database that will hold all user accounts.
+ 
+ - __authTableName__ : This is the name of the table in your auth database that will hold all created auth tokens.
