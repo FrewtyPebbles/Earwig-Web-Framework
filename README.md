@@ -213,4 +213,30 @@ Appends the *_appendvalue* to the value of the setting provided.  On failure ret
 
 Performs a _.pop()_ on the value of the setting provided.
 
----
+## Earwig HTML Renderer
+
+```python3
+print(
+ eh("header", {}, [
+   eh("title", {}, [
+    "This is a test site."
+   ])
+  ])+
+  eh("body", {}, [
+   eh("p",{},[
+    f"{z}"
+   ], ind=z) for z in range(1, 21)
+  ]
+  ).push([
+   eh("script",{},[
+    """alert("Hello.")"""
+   ],singleAttributes=["defer"])
+  ])
+)
+```
+
+The Earwig HTML Renderer allows you to easier tokenize certain elements and apply indexes to them with the _ind_ attribute.  This allows for easier server side procedural element generation, element sorting, and other useful features that are implemented into the _eh_ class.
+
+## Auth Tokens
+
+### SYMETRIC AUTH TOKENS
