@@ -22,8 +22,6 @@ These functions can be executed in any _.py_ or _.ear_ file except for the _boot
 
 ---
 
----
-
 `mime_type(mime:str):`
 
 Change the response mime type.  Returns the mime type.
