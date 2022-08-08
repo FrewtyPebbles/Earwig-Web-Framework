@@ -261,6 +261,8 @@ Earwig provides an easy system to set up login tokens and credentials with just 
 
 ---
 
+**_CONSTRUCTOR_**
+
 `SymmetricAuthTokens(identifier:str, dbName:str="Accounts", accountTableName:str="Accounts", authTableName:str="symetricAuthTokens")`
 
 The _SymmetricAuthTokens_ class is used as the main handler for your auth system. Each of its constructor's parameters provide a level of control over your auth system:
