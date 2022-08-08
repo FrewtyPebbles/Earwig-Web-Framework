@@ -54,6 +54,6 @@ Appends the *_appendvalue* to the value of the setting provided.  On failure ret
 
 `pop_setting(_setting, num:int = False)`
 
-Performs a _pop()_ on the value of the setting provided.
+Performs a _.pop()_ on the value of the setting provided.
 
 ---
