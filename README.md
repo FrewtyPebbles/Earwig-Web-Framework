@@ -19,6 +19,41 @@ If all was done correctly, you should be able to find your server hosted at [htt
 
 Earwig redirects the python stdout to the http response for incoming http requests.  In other words, anything that is __print()__ed in your earwig page files will be rendered/be the response for the requested url.
 
+## Configuring Your Server Settings
+
+Earwig server settings are configured in your _settings.EWS_ file.  A bare bones settings.EWS file might look like this:
+
+```lua
+/!/ Server Settings:
+
+port=8000
+ip=localhost
+devmode=false
+
+/!/ Json User Defined Settings:
+
+hashedAuthParameters~["password", "securityQuestion"]
+exampleDict~{"setting":"abc"}
+startupMessage~"SERVER STARTED"
+exampleNumber~-9.99
+exampleBool~false
+
+/!/ Init File:
+
+@_boot_.py
+
+/!/ Forbidden File Extensions:
+
+!ear
+!py
+!db
+!EWS
+
+/!/ Startup Routes:
+
+~=root.py
+```
+
 ## Framework Globals and Accessables
 
 These globals can be accessed in any _.py_ or _.ear_ page file as declared in the routes of your _settings.EWS_ file.
