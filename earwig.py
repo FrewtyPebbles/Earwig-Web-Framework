@@ -14,8 +14,8 @@ from libs.earwigUtils import *
 from libs.earwigParser import parse_EAR_to_string
 
 #EARWIG MODULES
-from modules.htmlconstructor import *
-from modules.accountManager import *
+from projectModules.htmlconstructor import *
+from projectModules.accountManager import *
 
 ##############################################
 # GLOBAL VARS (nessicary for request system)
@@ -108,6 +108,7 @@ def mime_type(mime: str):
 		globalEW["requestMimeType"] = 'application/wasm'
 	else:
 		globalEW["requestMimeType"] = mime
+	return globalEW["requestMimeType"]
 
 def set_headers(headerDict:dict = {}):
 	for key, val in headerDict.items():
@@ -115,18 +116,18 @@ def set_headers(headerDict:dict = {}):
 	return globalEW["EWheaders"]
 
 #setting modifiers
-def set_setting(_setting, _newvalue):
+def set_setting(_setting:str, _newvalue):
 	setting[_setting] = _newvalue
 	return _newvalue
 
-def append_setting(_setting, _appendvalue):
+def append_setting(_setting:str, _appendvalue):
 	try:
 		setting[_setting].append(_appendvalue)
 		return setting[_setting]
 	except:
 		return False
 
-def delete_setting(_setting) -> bool:
+def delete_setting(_setting:str) -> bool:
 	try:
 		del setting[_setting]
 		return True
@@ -147,7 +148,7 @@ def renderPagePython(filename: str, fileContent, R_get, R_post, recompile):
 	#FRAMEWORK VARS
 	_BASE_URL = globalEW["ew_BASE_URL"]
 	_FULL_URL = globalEW["ew_FULL_URL"]
-	_MIME_TYPE=globalEW["EWheaders"]
+	_MIME_TYPE= globalEW["EWheaders"]
 	#
 	compiledHTML=""
 	extensionStr = filename.split('.')[1]
