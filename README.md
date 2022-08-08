@@ -277,7 +277,7 @@ The _SymmetricAuthTokens_ class is used as the main handler for your auth system
 
 ---
 
-**_INITIALIZING THE ACCOUNT SYSTEM_*
+**_INITIALIZING THE ACCOUNT SYSTEM_**
 
 `.initAccountSystem(requiredParameters:tuple | list = [], authParameters:tuple | list = [], **kwargs:str) -> bool`
 
