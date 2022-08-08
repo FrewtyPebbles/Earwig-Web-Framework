@@ -24,32 +24,32 @@ Earwig redirects the python stdout to the http response for incoming http reques
 
 ---
 
-`def set_headers(headerDict:dict = {}):`
+`set_headers(headerDict:dict = {})`
 
  - Set/add the headers for the response.  Returns the dictionary of all the headers.
 
 ---
 
-`def set_setting(_setting:str, _newvalue):`
+`set_setting(_setting:str, _newvalue)`
 
- - Change/set a setting. returns the setting's new value.
-
----
-
-`def delete_setting(_setting:str) -> bool:`
-
- - Deletes a setting. Returns true on success, False on failure.
+Change/set a setting. returns the setting's new value.
 
 ---
 
-`def append_setting(_setting:str, _appendvalue):`
+`delete_setting(_setting:str) -> bool`
 
- - Appends to the value of the setting provided.  On failure returns false. On success returns the setting's new value.
+Deletes a setting. Returns true on success, False on failure.
 
 ---
 
-`def pop_setting(_setting, num:int = False):`
+`append_setting(_setting:str, _appendvalue)`
 
- - Performs a _pop()_ on the value of the setting provided.
+Appends the *_appendvalue* to the value of the setting provided.  On failure returns false. On success returns the setting's new value.
+
+---
+
+`pop_setting(_setting, num:int = False)`
+
+Performs a _pop()_ on the value of the setting provided.
 
 ---
