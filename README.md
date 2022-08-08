@@ -20,13 +20,13 @@ Earwig redirects the python stdout to the http response for incoming http reques
 
 `def mime_type(mime:str):`
 
- - Change the response mime type.  Returns the mime type.
+Change the response mime type.  Returns the mime type.
 
 ---
 
 `set_headers(headerDict:dict = {})`
 
- - Set/add the headers for the response.  Returns the dictionary of all the headers.
+Set/add the headers for the response.  Returns the dictionary of all the headers.
 
 ---
 
