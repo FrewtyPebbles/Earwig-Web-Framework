@@ -265,7 +265,7 @@ Earwig provides an easy system to set up login tokens and credentials with just 
 
 `SymmetricAuthTokens(identifier:str, dbName:str="Accounts", accountTableName:str="Accounts", authTableName:str="symetricAuthTokens")`
 
-The _SymmetricAuthTokens_ class is used as the main handler for your auth system. Each of its constructor's parameters provide a level of control over your auth system:
+The _SymmetricAuthTokens_ class is used as the main handler for your auth system.  You can initialize the class either in a _with_ statement, or call _.close()_ when no longer in use.  This will initialize the auth token table if not already existing.  Each of its constructor's parameters provide a level of control over your auth system:
 
  - __identifier__ : This is the column name/account parameter in the database that will act as the association between each account and tokens made by those accounts.  The best practice is to make this an account parameter that is not sensitive.
  
@@ -274,3 +274,15 @@ The _SymmetricAuthTokens_ class is used as the main handler for your auth system
  - __accountTableName__ : This is the name of the table in your auth database that will hold all user accounts.
  
  - __authTableName__ : This is the name of the table in your auth database that will hold all created auth tokens.
+
+---
+
+**_INITIALIZING THE ACCOUNT SYSTEM_*
+
+`.initAccountSystem(requiredParameters:tuple | list = [], authParameters:tuple | list = [], **kwargs:str) -> bool`
+
+The _.initAccountSystem_ member function is used to initialize the account system.  To maximize performance, this should only be called in a _boot.py_ file.  The parameters you provide will determine how your account system will function:
+
+ - __requiredParameters__ : The account parameters/database columns that you want to make required in order to successfully make an account.  On success, this will return _true_ and on failure this will return _false_.
+ - __authParameters__ : All account parameters/database columns that you would like users to use to login to their account/recive an auth token.
+ - __kwargs__ : ssss
