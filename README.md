@@ -1,5 +1,5 @@
 # Earwig (0.5.1)
->_IMPORTANT:_ __earwig.py__ USES http.server AND IS RISKY TO USE IN PRODUCTION.  FOR PRODUCTION USE __earwigFlask.py__.
+>_IMPORTANT: THIS BRANCH OF EARWIG IS BEING DEPRECATED, SEE THE WERKZEUG BRANCH FOR THE NEWEST VERSION OF EARWIG.  THE WERKZEUG BRANCH WILL REPLACE THE MAIN BRANCH ONCE THOROUGH BUG TESTING HAS BEEN DONE. 
 
  Earwig is an http server that enables you to use python as a server side scripting language.
  ## How To Get Started
