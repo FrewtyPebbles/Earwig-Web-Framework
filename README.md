@@ -285,4 +285,4 @@ The _.initAccountSystem_ member function is used to initialize the account syste
 
  - __requiredParameters__ : The account parameters/database columns that you want to make required in order to successfully make an account.  On success, this will return _true_ and on failure this will return _false_.
  - __authParameters__ : All account parameters/database columns that you would like users to use to login to their account/recive an auth token.
- - __kwargs__ : ssss
+ - __kwargs__ : All and every account parameter that you wish to provide should be named as a key and their SQL type should be its value as a string.
