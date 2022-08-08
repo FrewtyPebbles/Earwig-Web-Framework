@@ -18,7 +18,7 @@ Earwig redirects the python stdout to the http response for incoming http reques
 
 ## Framework Functions
 
-These functions can be executed in any _.py_ or _.ear_ file except for the _boot.py_ file that executes on server startup.
+These functions can be executed in any _.py_ or _.ear_ page file.
 
 ---
 
