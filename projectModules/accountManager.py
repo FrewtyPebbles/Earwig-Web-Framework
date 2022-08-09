@@ -7,7 +7,7 @@ ACCOUNT_MANAGER_VERSION = "0.1.0"
 
 # TODO
 """
-	#	Add asymetric auth tokens.
+	#	Implement support for other sql dialects
 
 """
 # END TODO
