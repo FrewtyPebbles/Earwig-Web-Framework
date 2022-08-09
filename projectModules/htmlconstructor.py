@@ -72,7 +72,7 @@ print(
 	eh("body", {}, [
 		eh("p",{},[
 			f"{z}"
-		], ind=z) for z in range(1, 21)
+		], ind=z) for z in range(1, 6)
 	]
 	).push([
 		eh("script",{},[

@@ -7,8 +7,7 @@ ACCOUNT_MANAGER_VERSION = "0.1.0"
 
 # TODO
 """
-	#	Try to hash the parameters in addAccount() so that it is invulnerable to
-	data leaks.
+	#	Add asymetric auth tokens.
 
 """
 # END TODO
