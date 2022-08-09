@@ -225,7 +225,7 @@ print(
   eh("body", {}, [
    eh("p",{},[
     f"{z}"
-   ], ind=z) for z in range(1, 21)
+   ], ind=z) for z in range(1, 6)
   ]
   ).push([
    eh("script",{},[
@@ -248,7 +248,7 @@ The Earwig HTML Renderer allows you to easier tokenize certain elements and appl
  <p>4</p>
  <p>5</p>
  <script defer>
-  alert("Hello lol.")
+  alert("Hello.")
  </script>
 </body>
 ```
