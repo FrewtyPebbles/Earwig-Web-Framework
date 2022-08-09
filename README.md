@@ -8,7 +8,7 @@
  Earwig is easy to setup and get working with only a few steps:
 1. Go into your __settings.txt__ file and change the default port to your desired port.
 2. Make a new file with a __.py__ extension.
-3. Now add that file as a route by adding a line to your __settings.txt__ following the format: _UrlRoute=filepathWithoutExtension_
+3. Now add that file as a route by adding a line to your __settings.txt__ following the format: _UrlRoute=filepathWithExtension_
 4. Now run your server by entering the following into a terminal:
 ```cli
 py earwig.py
