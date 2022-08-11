@@ -4,3 +4,5 @@
 *.css
 *.json
 *.js
+.vs/
+.gitignore
