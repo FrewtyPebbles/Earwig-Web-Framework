@@ -1,4 +1,4 @@
-# Earwig 0.9.1
+# Earwig 0.10.1
 **NOTE: This software is in a beta version, we cannot at this time ensure its stability.**
 
  Earwig is an http server that enables you serve _.py_ and _.ear_ source files alot like how _.php_ source files are served.
@@ -165,7 +165,25 @@ Provides the Root of the http URL.  Example _http://yourdns.com/_
 
 `_FULL_URL`
 
-Provides the full http URL with route.  Example _http://yourdns.com/about_
+Provides the full http URL with route.  Example _http://yourdns.com/pages/about_
+
+---
+
+`_PATH_URL`
+
+Provides the path after the base of the page URL. Example _/pages/about_
+
+---
+
+`_ORIGIN`
+
+Provides the address of the origin of the request (ie: the request client's ip).  Can be used to create blacklists dynamically.
+
+---
+
+`_COOKIES`
+
+Provides a dictionary of all of the cookies from the incoming request.
 
 ---
 
@@ -200,6 +218,18 @@ Change/set a setting. returns the setting's new value.
 `delete_setting(_setting:str) -> bool`
 
 Deletes a setting. Returns true on success, False on failure.
+
+---
+
+`set_route(_route:str, _path:str)`
+
+Sets a new or existing route dynamically.  Returns a tuple of ( **_route**, **_path** ).
+
+---
+
+`delete_route(_routeOrPath:str, _isRoute: bool = True) -> bool`
+
+Deletes an existing route.  Returns true on success, fail on failure.
 
 ---
 

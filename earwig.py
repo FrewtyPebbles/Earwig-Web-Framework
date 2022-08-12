@@ -1,6 +1,7 @@
 from contextlib import redirect_stdout
 from io import StringIO
 import os
+import re
 import textwrap
 import threading
 from werkzeug.wrappers import Request, Response
@@ -23,7 +24,7 @@ from projectModules.accountManager import *
 
 compiledCode = {}
 moduleCache = {}
-VERSION_NUMBER = "0.9.1"
+VERSION_NUMBER = "0.10.1"
 Universal = {}
 AuthTokens = {}
 earwigPages = {}
@@ -120,6 +121,27 @@ def set_setting(_setting:str, _newvalue):
 	setting[_setting] = _newvalue
 	return _newvalue
 
+def set_route(_route:str, _path:str):
+	routingPath[_route] = _path
+	return (_route, _path)
+
+def delete_route(_routeOrPath:str, _isRoute: bool = True) -> bool:
+	if _isRoute:
+		try:
+			del routingPath[_routeOrPath]
+			return True
+		except:
+			return False
+	else:
+		try:
+			for route in routingPath:
+				if routingPath[route] == _routeOrPath:
+					del routingPath[route]
+					return True
+			return False
+		except:
+			return False
+
 def append_setting(_setting:str, _appendvalue):
 	try:
 		setting[_setting].append(_appendvalue)
@@ -148,7 +170,10 @@ def renderPagePython(filename: str, fileContent, R_get, R_post, recompile):
 	#FRAMEWORK VARS
 	_BASE_URL = globalEW["ew_BASE_URL"]
 	_FULL_URL = globalEW["ew_FULL_URL"]
-	_MIME_TYPE= globalEW["EWheaders"]
+	_PATH_URL = globalEW["ew_PATH_URL"]
+	_ORIGIN = globalEW["ew_REQUEST_ORIGIN"]
+	_COOKIES = globalEW["ew_REQUEST_COOKIES"]
+	_MIME_TYPE = globalEW["EWheaders"]
 	#
 	compiledHTML=""
 	extensionStr = filename.split('.')[1]
@@ -186,6 +211,9 @@ def application(request):
 	globalEW["ew_BASE_URL"] = request.root_url
 	globalEW["ew_FULL_URL"] = request.base_url
 	globalEW["EWheaders"] = Headers()
+	globalEW["ew_PATH_URL"] = request.path
+	globalEW["ew_REQUEST_ORIGIN"] = request.origin
+	globalEW["ew_REQUEST_COOKIES"] = request.cookies
 	if request.method == 'POST':
 		globalEW["requestMimeType"] = ''
 		urlVars = {}
