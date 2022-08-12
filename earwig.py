@@ -18,6 +18,11 @@ from libs.earwigParser import parse_EAR_to_string
 from projectModules.htmlconstructor import *
 from projectModules.accountManager import *
 
+#TODO
+#
+# #  Change routing system from dict to SQL Alchemy database that uses sqlite by default in order to prevent over usage of RAM when dynamically creating routes.
+#
+#
 ##############################################
 # GLOBAL VARS (nessicary for request system)
 ##############################################
