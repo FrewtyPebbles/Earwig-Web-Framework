@@ -19,14 +19,14 @@ from projectModules.htmlconstructor import *
 from projectModules.accountManager import *
 
 #SQL ALCHEMY
-from sqlalchemy import create_engine, Column, Integer, String, select
+from sqlalchemy import create_engine, Column, Integer, String, select, UniqueConstraint
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 
 
 #TODO
 #
-# #  Change routing system from dict to SQL Alchemy database that uses sqlite by default in order to prevent over usage of RAM when dynamically creating routes.
+#
 #
 #
 ##############################################
@@ -35,7 +35,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 compiledCode = {}
 moduleCache = {}
-VERSION_NUMBER = "0.10.1"
+VERSION_NUMBER = "0.11.1"
 Universal = {}
 AuthTokens = {}
 earwigPages = {}
@@ -109,8 +109,15 @@ globalEW["EWsetting"] = setting
 globalEW["EWroutingPath"] = routingPath
 globalEW["EWforbiddenExtensions"] = forbiddenExtensions
 
+EW_SQLACCESSdns = ""
+if 'engineDBUsername' in setting.keys():
+	if setting['engineDBType'] == "sqlite":
+		EW_SQLACCESSdns = f"{setting['engineDBUsername'] if 'engineDBUsername' in setting.keys() else ''}{':' + setting['engineDBPassword'] if 'engineDBPassword' in setting.keys() else ''}@{setting['engineDBIp'] if 'engineDBIp' in setting.keys() else setting['ip']}:{setting['engineDBPort'] if 'engineDBPort' in setting.keys() else setting['port']}"
+else:
+	setting['engineDBType'] = 'sqlite'
+
 engine = create_engine(
-	f"{setting['engineDBType']}://{setting['engineDBUsername'] if 'engineDBUsername' in setting.keys() else ''}{':' + {setting['engineDBPassword']} if setting['engineDBPassword'] != '' else ''}@{setting['engineDBIp'] if 'engineDBIp' in setting.keys() else setting['ip']}:{setting['engineDBPort'] if 'engineDBPort' in setting.keys() else setting['port']}/{'EWEngine' if 'engineDBname' not in setting.keys() else setting['engineDBname']}",
+	f"{setting['engineDBType']}://{EW_SQLACCESSdns}/{'EWEngine.db' if 'engineDBname' not in setting.keys() else setting['engineDBname']}",
     future=True,
     echo=True
 )
@@ -128,20 +135,25 @@ class EWRoute(EWEngineBase):
 	id = Column(Integer, primary_key=True)
 	route = Column(String, nullable=False)
 	path = Column(String, nullable=False)
+	__table_args__ = (UniqueConstraint('route'),)
 
 with engine.begin() as con:
 	EWEngineBase.metadata.create_all(con)
 with Session.begin() as session:
 	for key, val in routingPath.items():
-		_SETingroute = EWRoute(route=key, path=val)
-		session.add(_SETingroute)
-		session.flush()
-		session.refresh(_SETingroute)
+		if not session.query(session.query(EWRoute.id).filter_by(route=key).exists()).scalar():
+			_SETingroute = EWRoute(route=key, path=val)
+			session.add(_SETingroute)
+			session.flush()
+			session.refresh(_SETingroute)
+		else:
+			session.query(EWRoute).filter_by(route=key).update({'path':val})
+			session.commit()
 
 def EW_routePath(_route):
 	with Session.begin() as session:
 		statement = select(EWRoute.path).filter_by(route=_route)
-		return session.execute(statement).one()[0][0]
+		return session.execute(statement).one()[0]
 
 ###########################
 # UTILS
@@ -175,18 +187,21 @@ def set_setting(_setting:str, _newvalue):
 
 def set_route(_route:str, _path:str):
 	with Session.begin() as session:
-		newroute = EWRoute(route=_route, path=_path)
-		session.add(newroute)
-		session.commit()
-		session.refresh(newroute)
+		if not session.query(session.query(EWRoute.id).filter_by(route=_route).exists()).scalar():
+			newroute = EWRoute(route=_route, path=_path)
+			session.add(newroute)
+			session.flush()
+			session.refresh(newroute)
+		else:
+			session.query(EWRoute).filter_by(route=_route).update({'path':_path})
+			session.commit()
 	return (_route, _path)
 
 def delete_route(_routeOrPath:str, _isRoute: bool = True) -> bool:
 	with Session.begin() as session:
 		if _isRoute:
 			try:
-				chosenRoute = EWRoute.query.filter_by(route = _routeOrPath).one()
-				session.delete(chosenRoute)
+				session.query(EWRoute).filter_by(route = _routeOrPath).delete()
 				session.commit()
 				return True
 			except:
@@ -194,8 +209,7 @@ def delete_route(_routeOrPath:str, _isRoute: bool = True) -> bool:
 		else:
 			try:
 				if session.query(EWRoute.id).filter_by(path = _routeOrPath).first() is not None:
-					chosenRoute = EWRoute.query.filter_by(path = _routeOrPath).one()
-					session.delete(chosenRoute)
+					session.query(EWRoute).filter_by(path = _routeOrPath).delete()
 					session.commit()
 					return True
 				return False
