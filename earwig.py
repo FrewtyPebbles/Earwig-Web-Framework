@@ -18,6 +18,12 @@ from libs.earwigParser import parse_EAR_to_string
 from projectModules.htmlconstructor import *
 from projectModules.accountManager import *
 
+#SQL ALCHEMY
+from sqlalchemy import create_engine, Column, Integer, String, select
+from sqlalchemy.orm import sessionmaker, declarative_base
+
+
+
 #TODO
 #
 # #  Change routing system from dict to SQL Alchemy database that uses sqlite by default in order to prevent over usage of RAM when dynamically creating routes.
@@ -57,7 +63,15 @@ with open('settings.EWS') as settingsFile:
 			forbiddenExtensions.append(line[1:])
 		elif not line.startswith("/!/"):
 			settingPair = line.split('=')
-			if line.startswith('ip') or line.startswith('port') or line.startswith('devmode'):
+			if line.startswith('ip')\
+			or line.startswith('port')\
+			or line.startswith('devmode')\
+			or line.startswith('engineDBType')\
+			or line.startswith('engineDBUsername')\
+			or line.startswith('engineDBPassword')\
+			or line.startswith('engineDBIp')\
+			or line.startswith('engineDBPort')\
+			or line.startswith('engineDBname'):
 				if line.startswith('devmode'):
 					setting[settingPair[0]] = True if settingPair[1].upper() == "TRUE" else False
 				else:
@@ -95,6 +109,39 @@ globalEW["EWsetting"] = setting
 globalEW["EWroutingPath"] = routingPath
 globalEW["EWforbiddenExtensions"] = forbiddenExtensions
 
+engine = create_engine(
+	f"{setting['engineDBType']}://{setting['engineDBUsername'] if 'engineDBUsername' in setting.keys() else ''}{':' + {setting['engineDBPassword']} if setting['engineDBPassword'] != '' else ''}@{setting['engineDBIp'] if 'engineDBIp' in setting.keys() else setting['ip']}:{setting['engineDBPort'] if 'engineDBPort' in setting.keys() else setting['port']}/{'EWEngine' if 'engineDBname' not in setting.keys() else setting['engineDBname']}",
+    future=True,
+    echo=True
+)
+
+Session = sessionmaker(
+	future=True,
+	bind=engine
+)
+
+EWEngineBase = declarative_base()
+
+class EWRoute(EWEngineBase):
+	__tablename__ = "ewRoute"
+	
+	id = Column(Integer, primary_key=True)
+	route = Column(String, nullable=False)
+	path = Column(String, nullable=False)
+
+with engine.begin() as con:
+	EWEngineBase.metadata.create_all(con)
+with Session.begin() as session:
+	for key, val in routingPath.items():
+		_SETingroute = EWRoute(route=key, path=val)
+		session.add(_SETingroute)
+		session.flush()
+		session.refresh(_SETingroute)
+
+def EW_routePath(_route):
+	with Session.begin() as session:
+		statement = select(EWRoute.path).filter_by(route=_route)
+		return session.execute(statement).one()[0][0]
 
 ###########################
 # UTILS
@@ -127,25 +174,33 @@ def set_setting(_setting:str, _newvalue):
 	return _newvalue
 
 def set_route(_route:str, _path:str):
-	routingPath[_route] = _path
+	with Session.begin() as session:
+		newroute = EWRoute(route=_route, path=_path)
+		session.add(newroute)
+		session.commit()
+		session.refresh(newroute)
 	return (_route, _path)
 
 def delete_route(_routeOrPath:str, _isRoute: bool = True) -> bool:
-	if _isRoute:
-		try:
-			del routingPath[_routeOrPath]
-			return True
-		except:
-			return False
-	else:
-		try:
-			for route in routingPath:
-				if routingPath[route] == _routeOrPath:
-					del routingPath[route]
+	with Session.begin() as session:
+		if _isRoute:
+			try:
+				chosenRoute = EWRoute.query.filter_by(route = _routeOrPath).one()
+				session.delete(chosenRoute)
+				session.commit()
+				return True
+			except:
+				return False
+		else:
+			try:
+				if session.query(EWRoute.id).filter_by(path = _routeOrPath).first() is not None:
+					chosenRoute = EWRoute.query.filter_by(path = _routeOrPath).one()
+					session.delete(chosenRoute)
+					session.commit()
 					return True
-			return False
-		except:
-			return False
+				return False
+			except:
+				return False
 
 def append_setting(_setting:str, _appendvalue):
 	try:
@@ -235,20 +290,20 @@ def application(request):
 			for i in range(0, len(rawURLVars)):
 				data = rawURLVars[i].split('=')
 				urlVars[data[0]] = URLDECODEPERCENT(data[1])
-			if routingPath[urlSlug]  not in globalEW["EWearwigPages"]:
-				globalEW["EWearwigPages"][routingPath[urlSlug]] = open(routingPath[urlSlug], 'r').read()
-				render = f"""{renderPagePython(routingPath[urlSlug],
-							globalEW["EWearwigPages"][routingPath[urlSlug]],
+			if EW_routePath(urlSlug)  not in globalEW["EWearwigPages"]:
+				globalEW["EWearwigPages"][EW_routePath(urlSlug)] = open(EW_routePath(urlSlug), 'r').read()
+				render = f"""{renderPagePython(EW_routePath(urlSlug),
+							globalEW["EWearwigPages"][EW_routePath(urlSlug)],
 							R_get=urlVars, R_post=postVars, recompile=True)}"""
-			elif globalEW["EWearwigPages"][routingPath[urlSlug]] != open(routingPath[urlSlug], 'r').read():
-				globalEW["EWearwigPages"][routingPath[urlSlug]] = open(routingPath[urlSlug], 'r').read()
-				render = f"""{renderPagePython(routingPath[urlSlug],
-							globalEW["EWearwigPages"][routingPath[urlSlug]],
+			elif globalEW["EWearwigPages"][EW_routePath(urlSlug)] != open(EW_routePath(urlSlug), 'r').read():
+				globalEW["EWearwigPages"][EW_routePath(urlSlug)] = open(EW_routePath(urlSlug), 'r').read()
+				render = f"""{renderPagePython(EW_routePath(urlSlug),
+							globalEW["EWearwigPages"][EW_routePath(urlSlug)],
 							R_get=urlVars, R_post=postVars, recompile=True)}"""
 			else:
-				globalEW["EWearwigPages"][routingPath[urlSlug]] = open(routingPath[urlSlug], 'r').read()
-				render = f"""{renderPagePython(routingPath[urlSlug],
-							globalEW["EWearwigPages"][routingPath[urlSlug]],
+				globalEW["EWearwigPages"][EW_routePath(urlSlug)] = open(EW_routePath(urlSlug), 'r').read()
+				render = f"""{renderPagePython(EW_routePath(urlSlug),
+							globalEW["EWearwigPages"][EW_routePath(urlSlug)],
 							R_get=urlVars, R_post=postVars, recompile=False)}"""
 		elif check_forbidden(request.path.rsplit('.', 1)[1], forbiddenExtensions):
 			if request.path.endswith(".js"):
@@ -276,20 +331,20 @@ def application(request):
 			for i in range(0, len(rawURLVars)):
 				data = rawURLVars[i].split('=')
 				urlVars[data[0]] = URLDECODEPERCENT(data[1])
-			if routingPath[urlSlug]  not in globalEW["EWearwigPages"]:
-				globalEW["EWearwigPages"][routingPath[urlSlug]] = open(routingPath[urlSlug], 'r').read()
-				render = f"""{renderPagePython(routingPath[urlSlug],
-							globalEW["EWearwigPages"][routingPath[urlSlug]],
+			if EW_routePath(urlSlug)  not in globalEW["EWearwigPages"]:
+				globalEW["EWearwigPages"][EW_routePath(urlSlug)] = open(EW_routePath(urlSlug), 'r').read()
+				render = f"""{renderPagePython(EW_routePath(urlSlug),
+							globalEW["EWearwigPages"][EW_routePath(urlSlug)],
 							R_get=urlVars, R_post={}, recompile=True)}"""
-			elif globalEW["EWearwigPages"][routingPath[urlSlug]] != open(routingPath[urlSlug], 'r').read():
-				globalEW["EWearwigPages"][routingPath[urlSlug]] = open(routingPath[urlSlug], 'r').read()
-				render = f"""{renderPagePython(routingPath[urlSlug],
-							globalEW["EWearwigPages"][routingPath[urlSlug]],
+			elif globalEW["EWearwigPages"][EW_routePath(urlSlug)] != open(EW_routePath(urlSlug), 'r').read():
+				globalEW["EWearwigPages"][EW_routePath(urlSlug)] = open(EW_routePath(urlSlug), 'r').read()
+				render = f"""{renderPagePython(EW_routePath(urlSlug),
+							globalEW["EWearwigPages"][EW_routePath(urlSlug)],
 							R_get=urlVars, R_post={}, recompile=True)}"""
 			else:
-				globalEW["EWearwigPages"][routingPath[urlSlug]] = open(routingPath[urlSlug], 'r').read()
-				render = f"""{renderPagePython(routingPath[urlSlug],
-							globalEW["EWearwigPages"][routingPath[urlSlug]],
+				globalEW["EWearwigPages"][EW_routePath(urlSlug)] = open(EW_routePath(urlSlug), 'r').read()
+				render = f"""{renderPagePython(EW_routePath(urlSlug),
+							globalEW["EWearwigPages"][EW_routePath(urlSlug)],
 							R_get=urlVars, R_post={}, recompile=False)}"""
 		elif check_forbidden(request.path.rsplit('.', 1)[1], forbiddenExtensions):
 			if request.path.endswith(".js"):
@@ -322,7 +377,7 @@ if __name__ == "__main__":#execute server
 	for forbidden in forbiddenExtensions:
 		print(f"\t- {forbidden}")
 
-	print("\nRoutes:")
+	print("\nEWS Routes:")
 
 	for routingKey in routingPath.keys():
 		print(f"\t- {routingKey if routingKey != '' else '~'}: {routingPath[routingKey]}")
