@@ -1,4 +1,4 @@
-# Earwig 0.11.1
+# Earwig 0.11.2
 **NOTE: This software is in a beta version, we cannot at this time ensure its stability.**
 
  Earwig is an http server that enables you serve _.py_ and _.ear_ source files alot like how _.php_ source files are served.

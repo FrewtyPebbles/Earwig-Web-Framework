@@ -21,12 +21,13 @@ from projectModules.accountManager import *
 #SQL ALCHEMY
 from sqlalchemy import create_engine, Column, Integer, String, select, UniqueConstraint
 from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.sql import exists
 
 
 
 #TODO
 #
-#
+# #
 #
 #
 ##############################################
@@ -35,7 +36,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 compiledCode = {}
 moduleCache = {}
-VERSION_NUMBER = "0.11.1"
+VERSION_NUMBER = "0.11.2"
 Universal = {}
 AuthTokens = {}
 earwigPages = {}
@@ -118,8 +119,7 @@ else:
 
 engine = create_engine(
 	f"{setting['engineDBType']}://{EW_SQLACCESSdns}/{'EWEngine.db' if 'engineDBname' not in setting.keys() else setting['engineDBname']}",
-    future=True,
-    echo=True
+    future=True
 )
 
 Session = sessionmaker(
@@ -139,15 +139,19 @@ class EWRoute(EWEngineBase):
 
 with engine.begin() as con:
 	EWEngineBase.metadata.create_all(con)
-with Session.begin() as session:
-	for key, val in routingPath.items():
-		if not session.query(session.query(EWRoute.id).filter_by(route=key).exists()).scalar():
+
+for key, val in routingPath.items():
+	with Session.begin() as session:
+		routeExists = session.query(exists().where(EWRoute.route == key)).scalar()
+	if routeExists == False:
+		with Session.begin() as session:
 			_SETingroute = EWRoute(route=key, path=val)
 			session.add(_SETingroute)
-			session.flush()
+			session.commit()
 			session.refresh(_SETingroute)
-		else:
-			session.query(EWRoute).filter_by(route=key).update({'path':val})
+	else:
+		with Session.begin() as session:
+			session.query(EWRoute).filter(EWRoute.route==key).update({'path':val})
 			session.commit()
 
 def EW_routePath(_route):
@@ -286,7 +290,7 @@ def application(request):
 	globalEW["ew_FULL_URL"] = request.base_url
 	globalEW["EWheaders"] = Headers()
 	globalEW["ew_PATH_URL"] = request.path
-	globalEW["ew_REQUEST_ORIGIN"] = request.origin
+	globalEW["ew_REQUEST_ORIGIN"] = request.remote_addr
 	globalEW["ew_REQUEST_COOKIES"] = request.cookies
 	if request.method == 'POST':
 		globalEW["requestMimeType"] = ''
