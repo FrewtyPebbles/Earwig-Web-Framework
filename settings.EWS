@@ -1,0 +1,19 @@
+/!/ Server Settings:
+port=8000
+ip=localhost
+devmode=false
+/!/ Json User Defined Settings:
+hashedAuthParameters~["password", "securityQuestion"]
+exampleDict~{"setting":"abc"}
+startupMessage~"SERVER STARTED"
+exampleNumber~-9.99
+exampleBool~false
+/!/ Init File:
+@_boot_.py
+/!/ Forbidden File Extensions:
+!ear
+!py
+!db
+!EWS
+/!/ Startup Routes:
+~=root.py
