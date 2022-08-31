@@ -15,8 +15,8 @@ from libs.earwigUtils import *
 from libs.earwigParser import parse_EAR_to_string
 
 #EARWIG MODULES
-from projectModules.htmlconstructor import *
-from projectModules.accountManager import *
+from libs.projectModules.htmlconstructor import *
+from libs.projectModules.accountManager import *
 
 #SQL ALCHEMY
 from sqlalchemy import create_engine, Column, Integer, String, select, UniqueConstraint
@@ -36,7 +36,7 @@ from sqlalchemy.sql import exists
 
 compiledCode = {}
 moduleCache = {}
-VERSION_NUMBER = "0.11.2"
+VERSION_NUMBER = "0.12.2"
 Universal = {}
 AuthTokens = {}
 earwigPages = {}
@@ -136,6 +136,7 @@ class EWRoute(EWEngineBase):
 	route = Column(String, nullable=False)
 	path = Column(String, nullable=False)
 	__table_args__ = (UniqueConstraint('route'),)
+
 
 with engine.begin() as con:
 	EWEngineBase.metadata.create_all(con)
