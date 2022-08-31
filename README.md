@@ -319,6 +319,6 @@ The _.initAccountSystem_ member function is used to initialize the account syste
  - __authParameters__ : All account parameters/database columns that you would like users to use to login to their account/recive an auth token.
  - __kwargs__ : All and every account parameter that you wish to store in the database/account table should be named as a key and their SQL type should be its value as a string.
 
-## The Earwig Preprocessor (.ear) (Expieremental)
+## The Earwig Preprocessor (.ear) (Expiremental)
 
 __Documentation for the Earwig preprocessor can be found here: https://github.com/FrewtyPebbles/Earwig-Template-Engine/wiki__
